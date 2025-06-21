@@ -1,0 +1,13 @@
+[
+  {
+    "timestamp": "2025-06-21T15:33:09.691160",
+    "user_id": "debug_user",
+    "session_id": "debug_session",
+    "user_message": "Olá, como você está?",
+    "agent_response": "Olá! Estou bem, obrigado por perguntar. Como você está hoje? Espero que esteja aproveitando seus estudos em IA com Python! Há algo específico em que posso te ajudar hoje, considerando sua preferência por Python e seu interesse em IA?\n",
+    "agent_type": "ADK",
+    "metadata": {
+      "has_rag_context": true
+    }
+  }
+]

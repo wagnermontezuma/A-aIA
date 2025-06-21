@@ -1,0 +1,13 @@
+[
+  {
+    "timestamp": "2025-06-21T18:19:29.162992",
+    "user_id": "711014113823817908",
+    "session_id": "discord_4e7109a285dda24192b36453807cb51b",
+    "user_message": "Quem vai ganhar o mundial de clubes?",
+    "agent_response": "De acordo com as casas de apostas e especialistas, alguns dos favoritos para vencer o Mundial de Clubes de 2025 são:\n\n*   **Real Madrid:** Apontado como um dos grandes favoritos, com um plantel de alta qualidade e vasta experiência em competições internacionais.\n*   **Manchester City:** Outro forte candidato, com um dos elencos mais completos do mundo e a capacidade de controlar o jogo sob o comando de Pep Guardiola.\n*   **Bayern de Munique:** Apesar de uma temporada doméstica irregular, o Bayern é sempre um time a ser respeitado em torneios internacionais, com jogadores experientes e um ataque poderoso.\n*   **PSG:** Vencedor da Liga dos Campeões, o PSG tem um time repleto de jogadores talentosos e experientes, mas precisa mostrar consistência em jogos de alta pressão.\n\nOutros times que também podem surpreender são o Chelsea, Inter de Milão e Atlético de Madrid.\n",
+    "agent_type": "ADK",
+    "metadata": {
+      "has_rag_context": true
+    }
+  }
+]

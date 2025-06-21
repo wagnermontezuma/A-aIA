@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projeto Agentes IA - Multi-Agente Interface</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext x='50%25' y='50%25' font-size='50' text-anchor='middle' dominant-baseline='central'%3E🤖%3C/text%3E%3C/svg%3E" type="image/svg+xml">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="header-content">
+                <h1>Agentes IA - Interface Multi-Agente</h1>
+                <p>Converse com diferentes agentes de IA: Google ADK e LangChain</p>
+            </div>
+            <div class="header-controls">
+                <div class="agent-selector">
+                    <label for="agentSelect">Agente Ativo:</label>
+                    <select id="agentSelect" class="agent-select">
+                        <option value="adk">Google ADK</option>
+                        <option value="langchain">LangChain</option>
+                    </select>
+                    <button id="switchAgentBtn" class="switch-btn" title="Trocar Agente">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                </div>
+                <div id="statusIndicator" class="status-indicator">
+                    <span id="statusText">Verificando...</span>
+                </div>
+            </div>
+        </header>
+
+        <main class="chat-container">
+            <div id="agentInfoBar" class="agent-info-bar">
+                <div class="current-agent-info">
+                    <i class="fas fa-robot"></i>
+                    <span>Agente Ativo: <strong id="currentAgentName">Carregando...</strong></span>
+                    <span id="currentAgentDescription">Carregando descrição...</span>
+                </div>
+            </div>
+            
+            <div id="chatMessages" class="chat-messages">
+                <div class="message bot-message">
+                    <div class="message-avatar">🤖</div>
+                    <div class="message-content">
+                        <p>Olá! Eu sou seu assistente de IA. Você pode escolher entre diferentes agentes no seletor acima. Como posso ajudá-lo hoje?</p>
+                        <small class="message-time">Agora</small>
+                    </div>
+                </div>
+            </div>
+
+            <div id="loadingIndicator" class="loading-indicator" style="display: none;">
+                <div class="typing-animation">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+                O agente está pensando...
+            </div>
+        </main>
+
+        <footer class="chat-input-form">
+            <form id="chatForm">
+                <div class="input-container">
+                    <input type="text" id="messageInput" placeholder="Digite sua mensagem...">
+                    <button type="submit" id="sendButton">➤</button>
+                </div>
+            </form>
+        </footer>
+
+        <aside class="info-panel">
+            <h3>Informações dos Agentes</h3>
+            <div id="agentsInfo">
+                Carregando informações dos agentes...
+            </div>
+        </aside>
+    </div>
+
+    <script src="{{ url_for('static', path='/script.js') }}"></script>
+Adicionar Conhecimento
+        
+            
+            
+                
+                
+                     Adicionar
+                
+                
+                     Cancelar
+                
+            
+        
+    
+
+    
+    
+         Gerenciar Conhecimento
+</body>
+</html>

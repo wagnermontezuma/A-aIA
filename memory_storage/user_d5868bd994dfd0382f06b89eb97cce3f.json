@@ -1,0 +1,105 @@
+[
+  {
+    "timestamp": "2025-06-21T15:41:06.280541",
+    "user_id": "web_user",
+    "session_id": "web_session_web_user_1109",
+    "user_message": "oi",
+    "agent_response": "Olá! Como posso te ajudar hoje com seus estudos de IA em Python?\n",
+    "agent_type": "ADK",
+    "metadata": {
+      "has_rag_context": true
+    }
+  },
+  {
+    "timestamp": "2025-06-21T15:41:53.031000",
+    "user_id": "web_user",
+    "session_id": "web_session_web_user_1109",
+    "user_message": "oi",
+    "agent_response": "Olá novamente! Como posso te ajudar hoje com seus estudos de IA em Python? Lembre-se que você prefere Python e está aprendendo IA, então posso te ajudar com exemplos e dicas nessa linguagem. 😊\n",
+    "agent_type": "ADK",
+    "metadata": {
+      "has_rag_context": true
+    }
+  },
+  {
+    "timestamp": "2025-06-21T16:19:58.342783",
+    "user_id": "web_user",
+    "session_id": "web_session_web_user_6348",
+    "user_message": "oi",
+    "agent_response": "Olá novamente! Como posso te ajudar hoje com seus estudos de IA em Python? Lembre-se que você prefere Python e está aprendendo IA, então posso te ajudar direcionando as respostas e informações para essa área.\n",
+    "agent_type": "ADK",
+    "metadata": {
+      "has_rag_context": true
+    }
+  },
+  {
+    "timestamp": "2025-06-21T16:20:17.906718",
+    "user_id": "web_user",
+    "session_id": "web_session_web_user_6348",
+    "user_message": "Qual minha linguagem preferida?",
+    "agent_response": "Com certeza! Baseado no contexto da nossa conversa anterior, você me informou que sua linguagem de programação preferida é Python. Além disso, lembro que você está estudando IA em Python. Há algo específico sobre Python ou IA que você gostaria de discutir hoje?\n",
+    "agent_type": "ADK",
+    "metadata": {
+      "has_rag_context": true
+    }
+  },
+  {
+    "timestamp": "2025-06-21T16:26:30.233432",
+    "user_id": "web_user",
+    "session_id": "web_session_web_user_9784",
+    "user_message": "Oi eu prefiro python para desenvolver",
+    "agent_response": "Oi! Que legal que você prefere Python para desenvolver! É uma linguagem de programação de alto nível, muito versátil e fácil de aprender. Você já tem algum projeto em mente ou está explorando as possibilidades? Se precisar de dicas ou informações sobre bibliotecas e frameworks, estou aqui para ajudar!",
+    "agent_type": "LangChain",
+    "metadata": {
+      "has_rag_context": true,
+      "session_history_length": 1
+    }
+  },
+  {
+    "timestamp": "2025-06-21T16:26:48.659938",
+    "user_id": "web_user",
+    "session_id": "web_session_web_user_9784",
+    "user_message": "Qual minha liguagem de programação preferida?",
+    "agent_response": "Sua linguagem de programação preferida é Python! É uma ótima escolha, especialmente para desenvolvimento, devido à sua simplicidade e versatilidade. Se precisar de dicas ou informações sobre Python, estou aqui para ajudar!",
+    "agent_type": "LangChain",
+    "metadata": {
+      "has_rag_context": true,
+      "session_history_length": 1
+    }
+  },
+  {
+    "timestamp": "2025-06-21T16:28:09.619683",
+    "user_id": "web_user",
+    "session_id": "web_session_web_user_9784",
+    "user_message": "Qual minha liguagen de programação preferida",
+    "agent_response": "Sua linguagem de programação preferida é Python! É uma ótima escolha, especialmente para desenvolvimento de aplicações e automação. Se precisar de ajuda com algo específico em Python, é só avisar!",
+    "agent_type": "LangChain",
+    "metadata": {
+      "has_rag_context": true,
+      "session_history_length": 1
+    }
+  },
+  {
+    "timestamp": "2025-06-21T16:29:25.852545",
+    "user_id": "web_user",
+    "session_id": "web_session_web_user_9784",
+    "user_message": "Que hora e o jogo do Paysandu e remo hoje",
+    "agent_response": "Desculpe, mas não tenho acesso a informações em tempo real, como horários de jogos. Recomendo verificar um site de esportes ou uma aplicação de resultados ao vivo para obter a hora exata do jogo entre Paysandu e Remo hoje. Se precisar de mais informações sobre os times ou a competição, estou aqui para ajudar!",
+    "agent_type": "LangChain",
+    "metadata": {
+      "has_rag_context": true,
+      "session_history_length": 1
+    }
+  },
+  {
+    "timestamp": "2025-06-21T16:31:01.282030",
+    "user_id": "web_user",
+    "session_id": "web_session_web_user_9784",
+    "user_message": "Que hora e o jogo do Paysandu e remo hoje",
+    "agent_response": "Com certeza!\n\nLembro que você gosta de Python, uma excelente linguagem de programação de alto nível.\n\nQuanto ao jogo do Paysandu e Remo de hoje, como mencionei anteriormente, não tenho acesso a informações em tempo real, como horários de jogos. A melhor maneira de descobrir essa informação é verificar um site de esportes ou um aplicativo de resultados esportivos.\n",
+    "agent_type": "ADK",
+    "metadata": {
+      "has_rag_context": true
+    }
+  }
+]
