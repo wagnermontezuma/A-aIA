@@ -1,0 +1,21 @@
+fastapi
+uvicorn[standard]
+jinja2
+python-multipart
+google-adk>=1.0.0
+google-generativeai
+python-dotenv
+langchain
+langchain-openai
+langchain-core
+langchain-tavily
+
+# Dependências atualizadas para resolver depreciações
+langchain-community
+langchain-huggingface
+sentence-transformers
+faiss-cpu
+langchain-text-splitters
+
+# Discord Bot
+discord.py>=2.3.0

@@ -1,0 +1,13 @@
+[
+  {
+    "timestamp": "2025-06-21T16:56:01.860193",
+    "user_id": "test_discord_user",
+    "session_id": "test_session",
+    "user_message": "Teste de integração Discord",
+    "agent_response": "Entendi. Você está testando a integração do Discord. Posso te ajudar com alguma coisa em relação a isso? Além disso, lembro que você estava aprendendo sobre Python, uma linguagem de programação de alto nível. Se tiver alguma dúvida sobre isso também, é só perguntar!\n",
+    "agent_type": "ADK",
+    "metadata": {
+      "has_rag_context": true
+    }
+  }
+]
