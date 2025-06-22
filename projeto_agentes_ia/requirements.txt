@@ -19,3 +19,12 @@ langchain-text-splitters
 
 # Discord Bot
 discord.py>=2.3.0
+aiohttp
+requests
+beautifulsoup4
+lxml
+
+# Dependências PostgreSQL
+asyncpg>=0.29.0
+psycopg2-binary>=2.9.0
+numpy>=1.24.0
