@@ -1,0 +1,59 @@
+[
+  {
+    "timestamp": "2025-06-21T18:16:58.237637",
+    "user_id": "1349871648626708491",
+    "session_id": "discord_e4fca45016430b49ef917e685806362a",
+    "user_message": "qual meu time do coração?",
+    "agent_response": "Como um modelo de linguagem, eu não tenho acesso às suas memórias ou informações pessoais. Portanto, não sei qual é o seu time do coração.\n\nNo entanto, posso te dar algumas dicas de como descobrir ou escolher um time para torcer:\n\n*   **Pense na sua família:** Muitos torcedores herdam o time de seus pais ou avós.\n*   **Considere a sua cidade:** Torcer para o time da sua cidade pode te conectar com a comunidade local.\n*   **Escolha um time com uma história:** Alguns times têm uma história rica e apaixonante, com grandes conquistas e ídolos.\n*   **Simpatize com um time:** Às vezes, você simplesmente se sente atraído por um time, seja pelas cores, pelo estilo de jogo ou pela torcida.\n\nSe você já tiver um time em mente, mas não tem certeza se é o \"time do seu coração\", sugiro que você assista a alguns jogos, leia sobre a história do clube e converse com outros torcedores. Talvez assim você descubra se essa é a sua verdadeira paixão!",
+    "agent_type": "ADK",
+    "metadata": {
+      "has_rag_context": true
+    }
+  },
+  {
+    "timestamp": "2025-06-21T18:17:49.016755",
+    "user_id": "1349871648626708491",
+    "session_id": "discord_e4fca45016430b49ef917e685806362a",
+    "user_message": "Meu time e o Paysandu",
+    "agent_response": "Ah, então seu time do coração é o Paysandu! Legal saber disso. Se precisar de informações ou notícias sobre o Paysandu, é só me perguntar. 😊\n",
+    "agent_type": "ADK",
+    "metadata": {
+      "has_rag_context": true
+    }
+  },
+  {
+    "timestamp": "2025-06-21T18:18:21.267840",
+    "user_id": "1349871648626708491",
+    "session_id": "discord_e4fca45016430b49ef917e685806362a",
+    "user_message": "Qual meu time?",
+    "agent_response": "Seu time do coração é o Paysandu!\n",
+    "agent_type": "ADK",
+    "metadata": {
+      "has_rag_context": true
+    }
+  },
+  {
+    "timestamp": "2025-06-21T18:20:00.857336",
+    "user_id": "1349871648626708491",
+    "session_id": "discord_e4fca45016430b49ef917e685806362a",
+    "user_message": "qual meu time do coração?",
+    "agent_response": "Seu time do coração é o Paysandu! Se precisar de informações ou novidades sobre o time, é só me avisar!",
+    "agent_type": "LangChain",
+    "metadata": {
+      "has_rag_context": true,
+      "session_history_length": 1
+    }
+  },
+  {
+    "timestamp": "2025-06-21T18:31:35.607739",
+    "user_id": "1349871648626708491",
+    "session_id": "discord_e4fca45016430b49ef917e685806362a",
+    "user_message": "voce consegue pesquisar na internet?",
+    "agent_response": "Atualmente, eu não consigo pesquisar na internet em tempo real. No entanto, tenho acesso a uma ampla gama de informações até outubro de 2023 e posso ajudar com perguntas ou fornecer informações com base nesse conhecimento. Se você tiver alguma dúvida ou precisar de informações específicas, é só me avisar!",
+    "agent_type": "LangChain",
+    "metadata": {
+      "has_rag_context": true,
+      "session_history_length": 1
+    }
+  }
+]

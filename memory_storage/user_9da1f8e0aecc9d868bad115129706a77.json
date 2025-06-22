@@ -1,0 +1,117 @@
+[
+  {
+    "timestamp": "2025-06-21T15:20:36.454927",
+    "user_id": "test_user",
+    "session_id": "test_session",
+    "user_message": "Teste de memória",
+    "agent_response": "Memória funcionando!",
+    "agent_type": "test",
+    "metadata": {}
+  },
+  {
+    "timestamp": "2025-06-21T15:21:01.732132",
+    "user_id": "test_user",
+    "session_id": "adk_session",
+    "user_message": "Qual é minha linguagem preferida?",
+    "agent_response": "Olá João!\n\nCom base no que sei sobre você, sua linguagem de programação preferida é Python. Além disso, sei que você está aprendendo sobre Inteligência Artificial. Como cliente da empresa, é ótimo saber que você está investindo em tecnologias de ponta!",
+    "agent_type": "ADK",
+    "metadata": {
+      "has_rag_context": true
+    }
+  },
+  {
+    "timestamp": "2025-06-21T15:21:15.244532",
+    "user_id": "test_user",
+    "session_id": "manager_session",
+    "user_message": "Você lembra do que acabamos de adicionar?",
+    "agent_response": "Sim, eu me lembro! Acabamos de adicionar as seguintes informações:\n\n*   **Fonte: integration\\_test**\n\n    *   Conteúdo: Este é um teste do sistema de memória integrado.\n*   **Fonte: user\\_profile**\n\n    *   Conteúdo: O usuário prefere Python e está aprendendo IA.\n\nAlém disso, lembro que você prefere Python e está aprendendo IA. Espero que as informações que eu forneci sejam úteis!\n",
+    "agent_type": "ADK",
+    "metadata": {
+      "has_rag_context": true
+    }
+  },
+  {
+    "timestamp": "2025-06-21T15:21:48.336809",
+    "user_id": "test_user",
+    "session_id": "test_session",
+    "user_message": "Teste de memória",
+    "agent_response": "Memória funcionando!",
+    "agent_type": "test",
+    "metadata": {}
+  },
+  {
+    "timestamp": "2025-06-21T15:22:12.391063",
+    "user_id": "test_user",
+    "session_id": "adk_session",
+    "user_message": "Qual é minha linguagem preferida?",
+    "agent_response": "Olá João!\n\nCom base no que sei sobre você, sua linguagem de programação preferida é Python. Além disso, sei que você está aprendendo sobre Inteligência Artificial (IA), o que faz de Python uma ótima escolha! 😊\n",
+    "agent_type": "ADK",
+    "metadata": {
+      "has_rag_context": true
+    }
+  },
+  {
+    "timestamp": "2025-06-21T15:22:26.710188",
+    "user_id": "test_user",
+    "session_id": "manager_session",
+    "user_message": "Você lembra do que acabamos de adicionar?",
+    "agent_response": "Sim, eu me lembro! Acabamos de adicionar as seguintes informações:\n\n*   **Fonte: integration\\_test**\n    *   Conteúdo: Este é um teste do sistema de memória integrado.\n*   **Fonte: integration\\_test**\n    *   Conteúdo: Este é um teste do sistema de memória integrado.",
+    "agent_type": "ADK",
+    "metadata": {
+      "has_rag_context": true
+    }
+  },
+  {
+    "timestamp": "2025-06-21T15:23:08.730132",
+    "user_id": "test_user",
+    "session_id": "test_session",
+    "user_message": "Teste de memória",
+    "agent_response": "Memória funcionando!",
+    "agent_type": "test",
+    "metadata": {}
+  },
+  {
+    "timestamp": "2025-06-21T15:23:32.562675",
+    "user_id": "test_user",
+    "session_id": "adk_session",
+    "user_message": "Qual é minha linguagem preferida?",
+    "agent_response": "Olá João!\n\nCom base no que sei sobre você, sua linguagem de programação preferida é Python. Além disso, sei que você está aprendendo sobre Inteligência Artificial (IA).",
+    "agent_type": "ADK",
+    "metadata": {
+      "has_rag_context": true
+    }
+  },
+  {
+    "timestamp": "2025-06-21T15:23:40.728333",
+    "user_id": "test_user",
+    "session_id": "lc_session",
+    "user_message": "Sobre o que estou trabalhando?",
+    "agent_response": "Você está desenvolvendo um projeto de chatbot. Se precisar de ajuda ou tiver perguntas específicas sobre isso, estou aqui para ajudar!",
+    "agent_type": "LangChain",
+    "metadata": {
+      "has_rag_context": true
+    }
+  },
+  {
+    "timestamp": "2025-06-21T15:23:48.334067",
+    "user_id": "test_user",
+    "session_id": "manager_session",
+    "user_message": "Você lembra do que acabamos de adicionar?",
+    "agent_response": "Sim, eu me lembro! Acabamos de adicionar as seguintes informações:\n\n*   **Fonte: integration\\_test**\n    *   Conteúdo: Este é um teste do sistema de memória integrado.\n\nAlém disso, lembro que você está trabalhando em um projeto de chatbot. Posso te ajudar com mais alguma coisa relacionada a isso?\n",
+    "agent_type": "ADK",
+    "metadata": {
+      "has_rag_context": true
+    }
+  },
+  {
+    "timestamp": "2025-06-21T15:40:54.268892",
+    "user_id": "test_user",
+    "session_id": "test_session",
+    "user_message": "Olá, como você está?",
+    "agent_response": "Olá! Estou bem, obrigado por perguntar. 😊 Lembro que você está aprendendo IA e prefere Python, certo? Se precisar de alguma ajuda com isso, é só me avisar!\n",
+    "agent_type": "ADK",
+    "metadata": {
+      "has_rag_context": true
+    }
+  }
+]
