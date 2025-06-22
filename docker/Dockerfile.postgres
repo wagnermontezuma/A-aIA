@@ -1,0 +1,22 @@
+# docker/Dockerfile.postgres
+# Usar PostgreSQL 16 como base
+FROM postgres:16
+
+# Instalar dependencias para compilar pgvector
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    git \
+    postgresql-server-dev-16 \
+    && rm -rf /var/lib/apt/lists/*
+
+# Clonar e compilar pgvector
+WORKDIR /tmp
+RUN git clone https://github.com/pgvector/pgvector.git
+WORKDIR /tmp/pgvector
+RUN make clean && make OPTFLAGS="" && make install
+
+# Limpar arquivos temporarios
+RUN rm -rf /tmp/pgvector
+
+# Definir comando padrao
+CMD ["postgres"]
