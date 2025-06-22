@@ -248,3 +248,100 @@ class MemoryManager:
         if hasattr(self.memory_service, 'list_user_conversations'):
             return self.memory_service.list_user_conversations(user_id)
         return []
+
+
+class PostgresMemoryManager:
+    """Gerenciador de memória usando PostgreSQL com pgvector."""
+
+    def __init__(self, config: 'PostgresConfig' = None):
+        from .postgres_memory_service import PostgresMemoryService, PostgresConfig
+        from .postgres_rag_system import PostgresRAGSystem
+
+        self.memory_service = PostgresMemoryService(config)
+        self.rag_system = PostgresRAGSystem(config)
+        self._initialized = False
+
+    async def initialize(self):
+        if not self._initialized:
+            await self.memory_service.initialize()
+            await self.rag_system.initialize()
+            self._initialized = True
+            print("✅ PostgresMemoryManager inicializado")
+
+    async def save_interaction(self, user_id: str, session_id: str, user_message: str,
+                               agent_response: str, agent_type: str, metadata: Dict = None) -> None:
+        if not self._initialized:
+            await self.initialize()
+
+        entry = ConversationEntry(
+            timestamp=datetime.now().isoformat(),
+            user_id=user_id,
+            session_id=session_id,
+            user_message=user_message,
+            agent_response=agent_response,
+            agent_type=agent_type,
+            metadata=metadata or {}
+        )
+
+        await self.memory_service.save_conversation(entry)
+
+    async def get_context_for_agent(self, user_id: str, session_id: str = None, limit: int = 5) -> str:
+        if not self._initialized:
+            await self.initialize()
+
+        history = await self.memory_service.get_conversation_history(user_id, session_id, limit)
+
+        if not history:
+            return "Esta é uma nova conversa."
+
+        context_parts = [f"CONTEXTO DA CONVERSA (PostgreSQL - Sessão: {session_id}):"]
+        for i, entry in enumerate(history, 1):
+            context_parts.append(f"{i}. Usuário: {entry.user_message}")
+            context_parts.append(f"   {entry.agent_type}: {entry.agent_response[:100]}...")
+            context_parts.append("")
+
+        return "\n".join(context_parts)
+
+    async def search_relevant_context(self, user_id: str, current_query: str, limit: int = 3) -> str:
+        if not self._initialized:
+            await self.initialize()
+
+        relevant_conversations = await self.memory_service.search_conversations(user_id, current_query, limit)
+
+        if not relevant_conversations:
+            return ""
+
+        context_parts = ["CONVERSAS RELACIONADAS (PostgreSQL):"]
+        for i, entry in enumerate(relevant_conversations, 1):
+            context_parts.append(f"{i}. Pergunta similar: {entry.user_message}")
+            context_parts.append(f"   Resposta anterior: {entry.agent_response[:150]}...")
+            context_parts.append(f"   (Sessão: {entry.session_id})")
+            context_parts.append("")
+
+        return "\n".join(context_parts)
+
+    async def add_knowledge(self, content: str, source: str = "manual", metadata: Dict = None) -> str:
+        if not self._initialized:
+            await self.initialize()
+        return await self.rag_system.add_document(content, source, metadata)
+
+    async def get_relevant_knowledge(self, query: str, limit: int = 3) -> str:
+        if not self._initialized:
+            await self.initialize()
+        return await self.rag_system.get_relevant_context(query, limit)
+
+    async def clear_conversation(self, user_id: str, session_id: str) -> bool:
+        if not self._initialized:
+            await self.initialize()
+        return await self.memory_service.clear_conversation(user_id, session_id)
+
+    async def list_user_conversations(self, user_id: str) -> List[Dict]:
+        if not self._initialized:
+            await self.initialize()
+        return await self.memory_service.get_user_sessions(user_id)
+
+    async def close(self):
+        if self._initialized:
+            await self.memory_service.close()
+            await self.rag_system.close()
+            self._initialized = False
