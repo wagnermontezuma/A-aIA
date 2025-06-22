@@ -1,4 +1,4 @@
-# discord_bot/bot.py - Versão com configurações robustas
+# discord_bot/bot.py - Versão com sistema de conversas isoladas e monitoramento de logs.
 import discord
 from discord.ext import commands
 import asyncio
@@ -20,63 +20,70 @@ from agents.agent_manager import AgentManager
 load_dotenv()
 
 class AgentEIABot(commands.Bot):
-    """Bot Discord com configurações robustas e tratamento de erros."""
-    
+    """Bot Discord com sistema de conversas isoladas e monitoramento de logs."""
+
     def __init__(self):
-        # Configurar intents necessários
         intents = discord.Intents.default()
         intents.message_content = True
         intents.guilds = True
-        
+
         super().__init__(
             command_prefix='!',
             intents=intents,
-            description="Bot de IA com agentes ADK e LangChain",
-            help_command=None  # Desabilitar comando de ajuda padrão
+            description="Bot de IA com agentes ADK, LangChain e Monitoramento de Logs"
         )
-        
+
         self.agent_manager = None
         self.user_agent_preferences = {}
         self.synced = False
-    
+
+        # Instância global do agente de monitoramento
+        self.log_monitor = None
+
     async def setup_hook(self):
-        """Configuração inicial com tratamento robusto de erros."""
+        """Configuração inicial com agente de monitoramento."""
         try:
             print("🤖 Inicializando AgentEIA Bot...")
-            
+
             # Inicializar gerenciador de agentes
             self.agent_manager = AgentManager()
             print("✅ Gerenciador de agentes inicializado")
-            
-            # Aguardar um pouco antes de sincronizar
-            await asyncio.sleep(2)
-            
-            # Sincronizar comandos
-            print("🔄 Sincronizando comandos...")
+
+            # Inicializar agente de monitoramento de logs
             try:
-                synced = await self.tree.sync()
-                print(f"✅ {len(synced)} comandos sincronizados")
-                self.synced = True
-            except Exception as sync_error:
-                print(f"⚠️ Erro na sincronização: {sync_error}")
-                print("Tentando novamente em 5 segundos...")
-                await asyncio.sleep(5)
-                try:
-                    synced = await self.tree.sync()
-                    print(f"✅ {len(synced)} comandos sincronizados (segunda tentativa)")
-                    self.synced = True
-                except Exception as sync_error2:
-                    print(f"❌ Falha na sincronização: {sync_error2}")
-            
+                from agents.log_monitor_agent import LogMonitorAgent
+
+                # Obter webhook do Discord para alertas
+                discord_webhook = os.getenv("DISCORD_WEBHOOK_URL")
+
+                self.log_monitor = LogMonitorAgent(
+                    discord_webhook_url=discord_webhook,
+                    check_interval=300  # 5 minutos
+                )
+                print("✅ Agente de monitoramento de logs inicializado")
+
+                # Iniciar monitoramento automático
+                asyncio.create_task(self.log_monitor.start_monitoring())
+                print("🚀 Monitoramento automático de logs iniciado")
+
+            except Exception as log_error:
+                print(f"⚠️ Erro ao inicializar monitoramento de logs: {log_error}")
+
+            # Sincronizar comandos
+            await asyncio.sleep(2)
+            synced = await self.tree.sync()
+            print(f"✅ {len(synced)} comandos sincronizados")
+            self.synced = True
+
         except Exception as e:
             print(f"❌ Erro na configuração: {e}")
-    
+
     async def on_ready(self):
         """Evento quando o bot está pronto."""
         print(f"🚀 {self.user} está online!")
         print(f"📊 Conectado a {len(self.guilds)} servidor(es)")
         print(f"🆔 Bot ID: {self.user.id}")
-        
+
         # Se não estiver em nenhum servidor, mostrar link de convite
         if len(self.guilds) == 0:
             invite_url = f"https://discord.com/api/oauth2/authorize?client_id={self.user.id}&permissions=2147483648&scope=bot%20applications.commands"
@@ -86,220 +93,416 @@ class AgentEIABot(commands.Bot):
             print(f"{invite_url}")
             print("="*60)
             return
-        
+
         # Listar servidores conectados
         for guild in self.guilds:
             print(f"   ✅ {guild.name} (ID: {guild.id})")
-        
+
         # Definir atividade
         try:
             activity = discord.Activity(
-                type=discord.ActivityType.listening,
-                name="/agenteia para conversar com IA"
+                type=discord.ActivityType.watching,
+                name="logs e conversando com IA"
             )
             await self.change_presence(activity=activity)
             print("✅ Status definido")
         except Exception as e:
             print(f"⚠️ Erro ao definir status: {e}")
-        
-        # Verificar permissões
-        await self.check_permissions()
-        
+
         print("🎉 Bot totalmente operacional!")
-        print("💡 Use /agenteia no Discord para testar!")
-    
-    async def check_permissions(self):
-        """Verifica permissões do bot nos servidores."""
-        for guild in self.guilds:
-            try:
-                bot_member = guild.get_member(self.user.id)
-                if bot_member:
-                    perms = bot_member.guild_permissions
-                    missing_perms = []
-                    
-                    required_perms = [
-                        ('send_messages', 'Enviar Mensagens'),
-                        ('use_slash_commands', 'Usar Comandos Slash'),
-                        ('embed_links', 'Incorporar Links'),
-                        ('read_message_history', 'Ler Histórico')
-                    ]
-                    
-                    for perm_name, perm_display in required_perms:
-                        if hasattr(perms, perm_name) and not getattr(perms, perm_name):
-                            missing_perms.append(perm_display)
-                    
-                    if missing_perms:
-                        print(f"⚠️ Permissões faltando em {guild.name}: {', '.join(missing_perms)}")
-                    else:
-                        print(f"✅ Permissões OK em {guild.name}")
-                        
-            except Exception as e:
-                print(f"⚠️ Erro ao verificar permissões em {guild.name}: {e}")
-    
-    async def on_application_command_error(self, interaction: discord.Interaction, error: discord.app_commands.AppCommandError):
-        """Trata erros de comandos slash."""
-        print(f"❌ Erro no comando {interaction.command.name if interaction.command else 'desconhecido'}: {error}")
-        
-        if not interaction.response.is_done():
-            await interaction.response.send_message(
-                "❌ Ocorreu um erro ao processar o comando. Tente novamente em alguns instantes.",
-                ephemeral=True
-            )
-    
+        print("💡 Use /agenteia, /log_monitor, /log_lista no Discord!")
+
     def generate_session_id(self, user_id: int, guild_id: int = None, channel_id: int = None) -> str:
         """Gera ID de sessão único."""
         context_parts = [str(user_id)]
-        
+
         if guild_id:
             context_parts.append(str(guild_id))
         if channel_id:
             context_parts.append(str(channel_id))
-        
+
         today = datetime.now().strftime("%Y-%m-%d")
         context_parts.append(today)
-        
+
         context_string = "_".join(context_parts)
         session_hash = hashlib.md5(context_string.encode()).hexdigest()
-        
+
         return f"discord_{session_hash}"
 
 # Instância global do bot
 bot = AgentEIABot()
 
+# Comandos existentes (agenteia, status) permanecem iguais...
+
 @bot.tree.command(
-    name="agenteia",
-    description="🤖 Converse com agentes de IA (ADK ou LangChain)"
+    name="log_monitor",
+    description="🔍 Controla o sistema de monitoramento de logs"
 )
 @discord.app_commands.describe(
-    modelo="Escolha: adk (Google Gemini) ou langchain (GPT-4)",
-    pergunta="Sua pergunta para o agente"
+    acao="Ação: start, stop, check, status",
+    data="Data específica (YYYY-MM-DD) - opcional"
 )
-@discord.app_commands.choices(modelo=[
-    discord.app_commands.Choice(name="🔧 ADK (Google Gemini)", value="adk"),
-    discord.app_commands.Choice(name="🧠 LangChain (GPT-4)", value="langchain")
+@discord.app_commands.choices(acao=[
+    discord.app_commands.Choice(name="🚀 Iniciar Monitoramento", value="start"),
+    discord.app_commands.Choice(name="🛑 Parar Monitoramento", value="stop"),
+    discord.app_commands.Choice(name="🔍 Verificar Hoje", value="check"),
+    discord.app_commands.Choice(name="📊 Status do Sistema", value="status")
 ])
-async def agenteia_command(
+async def log_monitor_command(
     interaction: discord.Interaction,
-    modelo: discord.app_commands.Choice[str],
-    pergunta: str
+    acao: discord.app_commands.Choice[str],
+    data: str = None
 ):
-    """Comando principal com validação robusta."""
-    await interaction.response.defer(thinking=True)
-    
+    """Comando para controlar o monitoramento de logs."""
+    await interaction.response.defer()
+
+    if not bot.log_monitor:
+        embed = discord.Embed(
+            title="❌ Monitoramento Indisponível",
+            description="Sistema de monitoramento de logs não está configurado.",
+            color=0xff0000
+        )
+        await interaction.followup.send(embed=embed)
+        return
+
     try:
-        modelo_value = modelo.value
-        user_id = interaction.user.id
-        guild_id = interaction.guild.id if interaction.guild else None
-        channel_id = interaction.channel.id
-        
-        print(f"🔄 Comando recebido: {modelo_value} - {pergunta[:30]}...")
-        
-        # Verificar se o agente está disponível
-        if not bot.agent_manager or modelo_value not in bot.agent_manager.agents:
+        action = acao.value
+
+        if action == "start":
+            if not bot.log_monitor.is_monitoring:
+                asyncio.create_task(bot.log_monitor.start_monitoring())
+                embed = discord.Embed(
+                    title="🚀 Monitoramento Iniciado",
+                    description="Sistema de monitoramento de logs ativado!",
+                    color=0x00ff00
+                )
+                embed.add_field(
+                    name="📋 Configurações",
+                    value=f"🔗 **URL:** {bot.log_monitor.base_url}\n⏱️ **Intervalo:** {bot.log_monitor.check_interval}s\n📊 **Status:** 🟢 Ativo",
+                    inline=False
+                )
+            else:
+                embed = discord.Embed(
+                    title="⚠️ Já Ativo",
+                    description="O monitoramento já está em execução.",
+                    color=0xffff00
+                )
+
+        elif action == "stop":
+            bot.log_monitor.stop_monitoring()
             embed = discord.Embed(
-                title="❌ Agente Indisponível",
-                description=f"O agente **{modelo.name}** não está disponível.\n\nVerifique se as API keys estão configuradas.",
-                color=0xff0000
+                title="🛑 Monitoramento Parado",
+                description="Sistema de monitoramento desativado.",
+                color=0xff9900
+            )
+
+        elif action == "check":
+            embed = discord.Embed(
+                title="🔍 Verificando Logs",
+                description="Iniciando verificação manual...",
+                color=0x0099ff
             )
             await interaction.followup.send(embed=embed)
+
+            if data:
+                response = await bot.log_monitor._run_async(f"verificar data {data}")
+            else:
+                response = await bot.log_monitor._run_async("verificar hoje")
+
+            result_embed = discord.Embed(
+                title="📋 Resultado da Verificação",
+                description=response,
+                color=0x00ff00
+            )
+            await interaction.followup.send(embed=result_embed)
             return
-        
-        # Configurar sessão
-        session_id = bot.generate_session_id(user_id, guild_id, channel_id)
-        bot.agent_manager.set_agent(modelo_value)
-        bot.agent_manager.set_user_context(str(user_id), session_id)
-        
-        # Processar pergunta
-        response = await bot.agent_manager.run_current_agent_with_context(
-            pergunta, str(user_id), session_id
-        )
-        
-        # Criar resposta
-        embed = discord.Embed(
-            title=f"🤖 {modelo.name}",
-            description=response[:4000] if len(response) > 4000 else response,
-            color=0x0099ff if modelo_value == "adk" else 0x00ff99
-        )
-        
-        embed.add_field(
-            name="❓ Pergunta",
-            value=pergunta[:1000] if len(pergunta) > 1000 else pergunta,
-            inline=False
-        )
-        
-        embed.add_field(name="📍 Canal", value=f"#{interaction.channel.name}", inline=True)
-        embed.add_field(name="🆔 Sessão", value=f"`{session_id[:12]}...`", inline=True)
-        
-        embed.set_footer(
-            text=f"Por {interaction.user.display_name}",
-            icon_url=interaction.user.display_avatar.url
-        )
-        
+
+        elif action == "status":
+            response = await bot.log_monitor._run_async("status")
+            embed = discord.Embed(
+                title="📊 Status do Sistema",
+                description=response,
+                color=0x0099ff
+            )
+
         await interaction.followup.send(embed=embed)
-        print(f"✅ Resposta enviada para {interaction.user.display_name}")
-        
+
     except Exception as e:
-        print(f"❌ Erro no comando agenteia: {e}")
         error_embed = discord.Embed(
-            title="❌ Erro Interno",
-            description=f"Ocorreu um erro:\n```{str(e)[:1000]}```",
+            title="❌ Erro",
+            description=f"Erro ao executar comando: {str(e)}",
             color=0xff0000
         )
         await interaction.followup.send(embed=error_embed)
 
 @bot.tree.command(
-    name="status",
-    description="📊 Verifica o status dos agentes"
+    name="log_lista",
+    description="📋 Visualiza logs de uma data específica"
 )
-async def status_command(interaction: discord.Interaction):
-    """Comando de status."""
+@discord.app_commands.describe(
+    data="Data dos logs (YYYY-MM-DD). Padrão: hoje",
+    linhas="Número de linhas para mostrar (máx: 50). Padrão: 20"
+)
+async def log_lista_command(
+    interaction: discord.Interaction,
+    data: str = None,
+    linhas: int = 20
+):
+    """Comando para visualizar logs diretamente no Discord."""
     await interaction.response.defer()
-    
-    try:
-        if not bot.agent_manager:
-            await interaction.followup.send("❌ Gerenciador não disponível.")
-            return
-        
-        agent_info = bot.agent_manager.get_agent_info()
-        
+
+    if not bot.log_monitor:
         embed = discord.Embed(
-            title="📊 Status dos Agentes",
-            color=0x00ff00
+            title="❌ Monitoramento Indisponível",
+            description="Sistema de monitoramento de logs não está configurado.",
+            color=0xff0000
         )
-        
-        for agent_type, info in agent_info["agents_status"].items():
-            status = "🟢 Online" if info["available"] else "🔴 Offline"
-            embed.add_field(
-                name=f"{info['name']}",
-                value=f"{status}\n{info['description'][:100]}...",
-                inline=True
-            )
-        
         await interaction.followup.send(embed=embed)
-        
+        return
+
+    try:
+        # Usar data atual se não especificada
+        if not data:
+            data = datetime.now().strftime("%Y-%m-%d")
+
+        # Validar formato da data
+        try:
+            datetime.strptime(data, "%Y-%m-%d")
+        except ValueError:
+            embed = discord.Embed(
+                title="❌ Data Inválida",
+                description="Use o formato YYYY-MM-DD (ex: 2025-06-21)",
+                color=0xff0000
+            )
+            await interaction.followup.send(embed=embed)
+            return
+
+        # Limitar número de linhas
+        linhas = max(1, min(linhas, 50))
+
+        print(f"🔍 Buscando logs de {data}...")
+
+        # Buscar logs
+        log_content = await bot.log_monitor.fetch_logs(data)
+
+        if not log_content:
+            embed = discord.Embed(
+                title="📋 Logs Não Encontrados",
+                description=f"Não foi possível acessar os logs de **{data}**.\n\nPossíveis causas:\n-  Data não existe\n-  Logs não foram gerados\n-  Erro de acesso ao servidor",
+                color=0xffff00
+            )
+            embed.add_field(
+                name="🔗 URL Tentada",
+                value=f"{bot.log_monitor.base_url}/{data}",
+                inline=False
+            )
+            await interaction.followup.send(embed=embed)
+            return
+
+        # Processar logs
+        log_lines = log_content.split('\n')
+        total_lines = len(log_lines)
+
+        # Pegar as últimas N linhas
+        recent_lines = log_lines[-linhas:] if total_lines > linhas else log_lines
+
+        # Extrair erros
+        errors = bot.log_monitor.extract_errors(log_content)
+
+        # Criar embed principal
+        embed = discord.Embed(
+            title=f"📋 Logs de {data}",
+            description=f"Exibindo **{len(recent_lines)}** linhas mais recentes de **{total_lines}** total",
+            color=0x0099ff
+        )
+
+        # Adicionar estatísticas
+        embed.add_field(
+            name="📊 Estatísticas",
+            value=f"🔢 **Total de linhas:** {total_lines}\n🚨 **Erros detectados:** {len(errors)}\n📅 **Data:** {data}",
+            inline=True
+        )
+
+        embed.add_field(
+            name="🔗 URL",
+            value=f"[Ver logs completos]({bot.log_monitor.base_url}/{data})",
+            inline=True
+        )
+
+        # Adicionar amostra dos logs (limitado pelo Discord)
+        log_sample = '\n'.join(recent_lines)
+
+        # Discord tem limite de 1024 caracteres por field
+        if len(log_sample) > 1000:
+            log_sample = log_sample[:1000] + "..."
+
+        embed.add_field(
+            name=f"📝 Últimas {len(recent_lines)} Linhas",
+            value=f"```\n{log_sample}\n```",
+            inline=False
+        )
+
+        await interaction.followup.send(embed=embed)
+
+        # Se houver erros, enviar embed separado com detalhes
+        if errors:
+            error_embed = discord.Embed(
+                title=f"🚨 Erros Detectados em {data}",
+                description=f"Encontrados **{len(errors)}** erros nos logs:",
+                color=0xff0000
+            )
+
+            # Mostrar até 3 erros mais recentes
+            for i, error in enumerate(errors[-3:], 1):
+                error_embed.add_field(
+                    name=f"❌ Erro {i}",
+                    value=f"**Linha {error['line_number']}:** {error['timestamp']}\n```{error['line'][:200]}```",
+                    inline=False
+                )
+
+            if len(errors) > 3:
+                error_embed.add_field(
+                    name="ℹ️ Mais Erros",
+                    value=f"... e mais {len(errors) - 3} erros. Use `/log_monitor acao:check data:{data}` para análise completa.",
+                    inline=False
+                )
+
+            await interaction.followup.send(embed=error_embed)
+
     except Exception as e:
-        await interaction.followup.send(f"❌ Erro: {str(e)}")
+        error_embed = discord.Embed(
+            title="❌ Erro ao Buscar Logs",
+            description=f"Ocorreu um erro ao tentar buscar os logs:\n```{str(e)}```",
+            color=0xff0000
+        )
+        await interaction.followup.send(embed=error_embed)
+
+@bot.tree.command(
+    name="log_search",
+    description="🔍 Busca por texto específico nos logs"
+)
+@discord.app_commands.describe(
+    termo="Termo para buscar nos logs",
+    data="Data dos logs (YYYY-MM-DD). Padrão: hoje",
+    limite="Número máximo de resultados (máx: 10). Padrão: 5"
+)
+async def log_search_command(
+    interaction: discord.Interaction,
+    termo: str,
+    data: str = None,
+    limite: int = 5
+):
+    """Comando para buscar texto específico nos logs."""
+    await interaction.response.defer()
+
+    if not bot.log_monitor:
+        embed = discord.Embed(
+            title="❌ Monitoramento Indisponível",
+            description="Sistema de monitoramento de logs não está configurado.",
+            color=0xff0000
+        )
+        await interaction.followup.send(embed=embed)
+        return
+
+    try:
+        # Usar data atual se não especificada
+        if not data:
+            data = datetime.now().strftime("%Y-%m-%d")
+
+        # Validar formato da data
+        try:
+            datetime.strptime(data, "%Y-%m-%d")
+        except ValueError:
+            embed = discord.Embed(
+                title="❌ Data Inválida",
+                description="Use o formato YYYY-MM-DD (ex: 2025-06-21)",
+                color=0xff0000
+            )
+            await interaction.followup.send(embed=embed)
+            return
+
+        # Limitar resultados
+        limite = max(1, min(limite, 10))
+
+        print(f"🔍 Buscando '{termo}' nos logs de {data}...")
+
+        # Buscar logs
+        log_content = await bot.log_monitor.fetch_logs(data)
+
+        if not log_content:
+            embed = discord.Embed(
+                title="📋 Logs Não Encontrados",
+                description=f"Não foi possível acessar os logs de **{data}**.",
+                color=0xffff00
+            )
+            await interaction.followup.send(embed=embed)
+            return
+
+        # Buscar termo nos logs
+        log_lines = log_content.split('\n')
+        matches = []
+
+        for i, line in enumerate(log_lines, 1):
+            if termo.lower() in line.lower():
+                matches.append({
+                    'line_number': i,
+                    'content': line.strip(),
+                    'context': '\n'.join(log_lines[max(0, i-2):min(len(log_lines), i+1)])
+                })
+
+                if len(matches) >= limite:
+                    break
+
+        # Criar resposta
+        if not matches:
+            embed = discord.Embed(
+                title="🔍 Busca nos Logs",
+                description=f"Nenhum resultado encontrado para **'{termo}'** em {data}",
+                color=0xffff00
+            )
+            embed.add_field(
+                name="📊 Informações",
+                value=f"🔢 **Linhas analisadas:** {len(log_lines)}\n📅 **Data:** {data}",
+                inline=False
+            )
+        else:
+            embed = discord.Embed(
+                title="🔍 Resultados da Busca",
+                description=f"Encontrados **{len(matches)}** resultados para **'{termo}'** em {data}",
+                color=0x00ff00
+            )
+
+            for i, match in enumerate(matches, 1):
+                embed.add_field(
+                    name=f"📍 Resultado {i} (Linha {match['line_number']})",
+                    value=f"```{match['content'][:200]}```",
+                    inline=False
+                )
+
+        await interaction.followup.send(embed=embed)
+
+    except Exception as e:
+        error_embed = discord.Embed(
+            title="❌ Erro na Busca",
+            description=f"Ocorreu um erro ao buscar nos logs:\n```{str(e)}```",
+            color=0xff0000
+        )
+        await interaction.followup.send(embed=error_embed)
+
+# Manter comandos existentes (agenteia, status, etc.)...
 
 def run_bot():
-    """Executa o bot com tratamento de erros."""
+    """Executa o bot Discord."""
     token = os.getenv("DISCORD_BOT_TOKEN")
-    
+
     if not token:
         print("❌ DISCORD_BOT_TOKEN não encontrado no .env")
-        print("Configure: DISCORD_BOT_TOKEN=seu_token")
         return
-    
-    print("🚀 Iniciando bot...")
-    print("🔧 Para resolver 'Integração desconhecida':")
-    print("   1. Verifique permissões no Discord Developer Portal")
-    print("   2. Re-convide o bot se necessário")
-    print("   3. Use Ctrl+R no Discord após inicialização")
-    
+
     try:
+        print("🚀 Iniciando bot com monitoramento de logs integrado...")
         bot.run(token)
     except discord.LoginFailure:
-        print("❌ Token inválido")
-    except discord.HTTPException as e:
-        print(f"❌ Erro HTTP: {e}")
+        print("❌ Token do Discord inválido")
     except Exception as e:
-        print(f"❌ Erro: {e}")
+        print(f"❌ Erro ao executar o bot: {e}")

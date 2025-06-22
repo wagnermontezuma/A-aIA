@@ -19,3 +19,9 @@ langchain-text-splitters
 
 # Discord Bot
 discord.py>=2.3.0
+
+# Dependências para monitoramento de logs
+aiohttp
+requests
+beautifulsoup4
+lxml
