@@ -49,6 +49,21 @@ class AgentEIABot(commands.Bot):
             self.agent_manager = AgentManager()
             print("✅ Gerenciador de agentes inicializado")
 
+            # Carregar comandos RAG
+            try:
+                from .rag_commands import setup as setup_rag
+                await setup_rag(self)
+                print("✅ Comandos RAG carregados")
+            except Exception as rag_error:
+                print(f"⚠️ Erro ao carregar comandos RAG: {rag_error}")
+
+            # Carregar comandos B-Ticket
+            try:
+                await self.load_extension("discord_bot.bticket_commands")
+                print("✅ Comandos B-Ticket carregados")
+            except Exception as bticket_error:
+                print(f"⚠️ Erro ao carregar comandos B-Ticket: {bticket_error}")
+
             # Inicializar agente de monitoramento de logs
             try:
                 from agents.log_monitor_agent import LogMonitorAgent
@@ -489,7 +504,123 @@ async def log_search_command(
         )
         await interaction.followup.send(embed=error_embed)
 
-# Manter comandos existentes (agenteia, status, etc.)...
+@bot.tree.command(name="agenteia", description="🤖 Interaja com os agentes de IA")
+@discord.app_commands.describe(
+    modelo="Escolha o modelo de IA",
+    pergunta="Sua pergunta para o agente"
+)
+@discord.app_commands.choices(modelo=[
+    discord.app_commands.Choice(name="🔧 ADK (Google Gemini Nativo)", value="adk"),
+    discord.app_commands.Choice(name="🧠 LangChain (Google Gemini + Ferramentas)", value="langchain")
+])
+async def agenteia_command(
+    interaction: discord.Interaction,
+    modelo: discord.app_commands.Choice[str],
+    pergunta: str
+):
+    """Comando principal com ambos agentes usando Google Gemini."""
+    await interaction.response.defer()
+
+    user_id = str(interaction.user.id)
+    session_id = bot.generate_session_id(
+        user_id=interaction.user.id,
+        guild_id=interaction.guild_id,
+        channel_id=interaction.channel_id
+    )
+
+    # Definir o agente escolhido pelo usuário
+    if not bot.agent_manager.set_agent(modelo.value):
+        embed = discord.Embed(
+            title="❌ Agente Indisponível",
+            description=f"O agente '{modelo.name}' não está disponível no momento.",
+            color=0xff0000
+        )
+        await interaction.followup.send(embed=embed)
+        return
+
+    # Definir contexto do usuário para o agente
+    bot.agent_manager.set_user_context(user_id, session_id)
+
+    # Executar a consulta
+    try:
+        response = await bot.agent_manager.run_current_agent_with_context(
+            pergunta, user_id, session_id
+        )
+
+        # Criar embed de resposta
+        embed = discord.Embed(
+            title="🤖 Resposta do Agente de IA",
+            description=response,
+            color=0x00ff00
+        )
+
+        # Adicionar informações sobre o agente e modelo
+        embed.add_field(
+            name="🤖 Modelo Unificado",
+            value=f"**Google Gemini 2.0 Flash**\nFramework: {modelo.name}",
+            inline=True
+        )
+
+        # Adicionar timestamp
+        embed.set_footer(text=f"Sessão: {session_id} | {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+
+        await interaction.followup.send(embed=embed)
+
+    except Exception as e:
+        error_embed = discord.Embed(
+            title="❌ Erro ao Processar Pergunta",
+            description=f"Ocorreu um erro ao processar sua pergunta:\n```{str(e)}```",
+            color=0xff0000
+        )
+        await interaction.followup.send(embed=error_embed)
+
+@bot.tree.command(name="status", description="📊 Verifica o status dos agentes de IA")
+async def status_command(interaction: discord.Interaction):
+    """Comando para verificar o status dos agentes."""
+    await interaction.response.defer()
+
+    if not bot.agent_manager:
+        embed = discord.Embed(
+            title="❌ Gerenciador Indisponível",
+            description="O gerenciador de agentes não está inicializado.",
+            color=0xff0000
+        )
+        await interaction.followup.send(embed=embed)
+        return
+
+    agent_info = bot.agent_manager.get_agent_info()
+
+    embed = discord.Embed(
+        title="📊 Status dos Agentes de IA",
+        description="Informações sobre os agentes disponíveis:",
+        color=0x0099ff
+    )
+
+    embed.add_field(
+        name="✅ Agentes Disponíveis",
+        value=", ".join(agent_info['available_agents']) if agent_info['available_agents'] else "Nenhum",
+        inline=False
+    )
+
+    embed.add_field(
+        name="➡️ Agente Atual",
+        value=agent_info['current_agent'] if agent_info['current_agent'] else "Nenhum selecionado",
+        inline=False
+    )
+
+    status_text = ""
+    for agent_type, status in agent_info['agents_status'].items():
+        status_text += f"**{status['name']}**: {'🟢 Ativo' if status['available'] else '🔴 Inativo'}\n"
+        status_text += f"  *Descrição*: {status['description']}\n"
+
+    if status_text:
+        embed.add_field(
+            name="📋 Detalhes",
+            value=status_text,
+            inline=False
+        )
+
+    await interaction.followup.send(embed=embed)
 
 def run_bot():
     """Executa o bot Discord."""

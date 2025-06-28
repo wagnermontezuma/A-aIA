@@ -1,6 +1,6 @@
 from typing import Dict, Optional
 from .adk_agent_with_memory import ADKAgentWithMemory
-from .langchain_agent_with_memory import LangChainAgentWithMemory
+from .langchain_agent_with_memory import LangChainGeminiAgent  # Nova importação
 from .base_agent import BaseAgent
 import os
 
@@ -16,34 +16,34 @@ class AgentManager:
         self._initialize_agents()
     
     def _initialize_agents(self):
-        """Inicializa todos os agentes disponíveis com tratamento robusto de erros."""
+        """Inicializa todos os agentes disponíveis com Google Gemini unificado."""
         instruction = """
-        Você é um assistente de IA inteligente e prestativo. 
+        Você é um assistente de IA inteligente e prestativo.
         Responda às perguntas dos usuários de forma clara, precisa e informativa.
         Se você não souber algo, seja honesto sobre isso.
         Mantenha suas respostas organizadas e fáceis de entender.
         Use sua memória para fornecer respostas mais personalizadas e contextuais.
         """
         
-        # Inicializar agente ADK com memória
+        # Inicializar agente ADK com memória (Google Gemini)
         try:
             if os.getenv("GOOGLE_API_KEY"):
                 self.agents["adk"] = ADKAgentWithMemory(instruction=instruction)
-                print("✅ Agente ADK com memória inicializado com sucesso")
+                print("✅ Agente ADK (Google Gemini) inicializado com sucesso")
             else:
                 print("⚠️  Agente ADK não inicializado - GOOGLE_API_KEY não encontrada")
         except Exception as e:
             print(f"❌ Erro ao inicializar agente ADK: {e}")
         
-        # Inicializar agente LangChain com memória
+        # Inicializar agente LangChain com Gemini (mesmo modelo do ADK)
         try:
-            if os.getenv("OPENAI_API_KEY"):
-                self.agents["langchain"] = LangChainAgentWithMemory(instruction=instruction)
-                print("✅ Agente LangChain com memória inicializado com sucesso")
+            if os.getenv("GOOGLE_API_KEY"):
+                self.agents["langchain"] = LangChainGeminiAgent(instruction=instruction)
+                print("✅ Agente LangChain (Google Gemini) inicializado com sucesso")
             else:
-                print("⚠️  Agente LangChain não inicializado - OPENAI_API_KEY não encontrada")
+                print("⚠️  Agente LangChain não inicializado - GOOGLE_API_KEY não encontrada")
         except Exception as e:
-            print(f"❌ Erro ao inicializar agente LangChain: {e}")
+            print(f"❌ Erro ao inicializar agente LangChain-Gemini: {e}")
         
         # Definir agente padrão
         if "adk" in self.agents:
@@ -98,8 +98,8 @@ class AgentManager:
     def _get_agent_description(self, agent_type: str) -> str:
         """Retorna a descrição de um tipo de agente."""
         descriptions = {
-            "adk": "Google Agent Development Kit - Modelo Gemini 2.0 com busca integrada e memória",
-            "langchain": "LangChain Agent - GPT-4 com memória conversacional e RAG"
+            "adk": "Google ADK - Gemini 2.0 Flash com busca integrada e memória",
+            "langchain": "LangChain + Google Gemini 2.0 Flash com ferramentas e memória avançada"
         }
         return descriptions.get(agent_type, "Agente de IA")
         
